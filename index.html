@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Estimativa de Salário - Estagiário</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-calcular {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-calcular:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-limpar {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-limpar:hover {
+            background: #e0e0e0;
+        }
+
+        .resultado {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .resultado.ativo {
+            display: block;
+        }
+
+        .resultado-titulo {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .resultado-valor {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .resultado-detalhes {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .resultado-detalhes strong {
+            color: #333;
+        }
+
+        .erro {
+            background: #fee;
+            border-left: 4px solid #f44;
+            color: #c33;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .erro.ativo {
+            display: block;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1565c0;
+            line-height: 1.5;
+            margin-top: 20px;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .resultado-valor {
+                font-size: 28px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 Calculadora de Salário</h1>
+            <p>Estimativa de Bolsa-Auxílio</p>
+            <p class="subtitle">Prefeitura de Lins</p>
+        </div>
+
+        <div class="erro" id="erro"></div>
+
+        <form id="formulario">
+            <!-- Nível de Ensino -->
+            <div class="form-group">
+                <label>Nível de Ensino</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="ensino-medio" name="nivel" value="11.27" required>
+                        <label for="ensino-medio">Ensino Médio (R$ 11,27/h)</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="ensino-superior" name="nivel" value="12.61" required>
+                        <label for="ensino-superior">Ensino Superior (R$ 12,61/h)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dias Úteis -->
+            <div class="form-group">
+                <label for="dias-uteis">Dias Úteis do Mês</label>
+                <input type="number" id="dias-uteis" name="diasUteis" value="22" min="15" max="25" required>
+                <div class="input-info">Mínimo: 15 dias | Máximo: 25 dias</div>
+            </div>
+
+            <!-- Carga Horária Diária -->
+            <div class="form-group">
+                <label for="carga-horaria">Carga Horária Diária (horas)</label>
+                <input type="number" id="carga-horaria" name="cargaHoraria" value="6" min="2" max="8" step="0.5" required>
+                <div class="input-info">Mínimo: 2 horas | Máximo: 8 horas</div>
+            </div>
+
+            <!-- Botões -->
+            <div class="button-group">
+                <button type="button" class="btn-calcular" onclick="calcular()">Calcular</button>
+                <button type="button" class="btn-limpar" onclick="limpar()">Limpar</button>
+            </div>
+        </form>
+
+        <!-- Resultado -->
+        <div class="resultado" id="resultado">
+            <div class="resultado-titulo">Estimativa Mensal</div>
+            <div class="resultado-valor" id="valor-resultado">R$ 0,00</div>
+            <div class="resultado-detalhes" id="detalhes-resultado"></div>
+        </div>
+
+        <!-- Informações -->
+        <div class="info-box">
+            <strong>ℹ️ Como funciona:</strong>
+            Este cálculo é apenas uma estimativa. O valor final pode variar conforme descontos legais, 
+            feriados não trabalhados ou ajustes na carga horária.
+        </div>
+    </div>
+
+    <script>
+        function calcular() {
+            // Limpar erro anterior
+            const erroDiv = document.getElementById('erro');
+            erroDiv.classList.remove('ativo');
+            erroDiv.textContent = '';
+
+            // Validar seleção de nível
+            const nivel = document.querySelector('input[name="nivel"]:checked');
+            if (!nivel) {
+                mostrarErro('Por favor, selecione seu nível de ensino.');
+                return;
+            }
+
+            // Obter valores
+            const valorHora = parseFloat(nivel.value);
+            const diasUteis = parseFloat(document.getElementById('dias-uteis').value);
+            const cargaHoraria = parseFloat(document.getElementById('carga-horaria').value);
+
+            // Validar valores
+            if (!diasUteis || diasUteis < 15 || diasUteis > 25) {
+                mostrarErro('Dias úteis deve estar entre 15 e 25.');
+                return;
+            }
+
+            if (!cargaHoraria || cargaHoraria < 2 || cargaHoraria > 8) {
+                mostrarErro('Carga horária deve estar entre 2 e 8 horas.');
+                return;
+            }
+
+            // Calcular
+            const totalHoras = diasUteis * cargaHoraria;
+            const salarioEstimado = totalHoras * valorHora;
+
+            // Exibir resultado
+            const nivelTexto = nivel.id === 'ensino-medio' ? 'Ensino Médio' : 'Ensino Superior';
+            const valorHoraFormatado = valorHora.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const salarioFormatado = salarioEstimado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            document.getElementById('valor-resultado').textContent = salarioFormatado;
+            document.getElementById('detalhes-resultado').innerHTML = `
+                <strong>Detalhamento do Cálculo:</strong><br>
+                Nível: ${nivelTexto}<br>
+                Dias Úteis: ${diasUteis} dias<br>
+                Carga Horária: ${cargaHoraria} horas/dia<br>
+                Total de Horas: ${totalHoras} horas<br>
+                Valor da Hora: ${valorHoraFormatado}<br>
+                <br>
+                <strong>Fórmula:</strong> ${diasUteis} × ${cargaHoraria} × ${valorHora} = ${salarioFormatado}
+            `;
+
+            document.getElementById('resultado').classList.add('ativo');
+        }
+
+        function limpar() {
+            document.getElementById('formulario').reset();
+            document.getElementById('resultado').classList.remove('ativo');
+            document.getElementById('erro').classList.remove('ativo');
+        }
+
+        function mostrarErro(mensagem) {
+            const erroDiv = document.getElementById('erro');
+            erroDiv.textContent = '❌ ' + mensagem;
+            erroDiv.classList.add('ativo');
+        }
+
+        // Permitir Enter para calcular
+        document.getElementById('formulario').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calcular();
+            }
+        });
+    </script>
+</body>
+</html>
